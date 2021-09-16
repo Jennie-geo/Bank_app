@@ -17,6 +17,6 @@ const route = Router();
 route.post("/signup", postSignup);
 route.post("/login", postLogin);
 route.get("/getUser", verifyToken, getSignUpUser);
-route.delete("/logout/:id", postLogout);
+route.delete("/logout", postLogout);
 
 module.exports = route;

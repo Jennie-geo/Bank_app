@@ -5,6 +5,8 @@ import jwt from "jsonwebtoken";
 const bcrypt = require("bcrypt");
 const User = require("../model/user");
 
+const blackList = [];
+
 export async function postSignup(req: express.Request, res: express.Response) {
   const email = req.body.email;
   const newUser = await User.findOne({ email: email });
@@ -42,6 +44,9 @@ export async function postLogin(req: express.Request, res: express.Response) {
     const token = jwt.sign({ user }, "SECRET", {
       expiresIn: "1hr",
     });
+
+    res.cookie("Authorization", token, { httpOnly: true });
+
     return res.status(200).json({
       message: "Auth successful",
       token: token,
@@ -64,13 +69,19 @@ export async function getSignUpUser(
 }
 
 export async function postLogout(req: express.Request, res: express.Response) {
-  User.deleteOne({ id: req.params.id })
-    .then(() => {
-      res.status(200).json({
-        message: `The user with an ${req.params.id} successfully remove`,
-      });
-    })
-    .catch((err: any) => {
-      res.status(400).json({ message: err });
-    });
+  console.log("logout");
+  res.clearCookie("Authorization");
+  // res.removeHeader("Authorization");
+  res.status(200).send({
+    message: "logged out",
+  });
+  // User.deleteOne({ id: req.params.id })
+  //   .then(() => {
+  //     res.status(200).json({
+  //       message: `The user with an ${req.params.id} successfully remove`,
+  //     });
+  //   })
+  //   .catch((err: any) => {
+  //     res.status(400).json({ message: err });
+  //   });
 }

@@ -20,16 +20,17 @@ export async function getAllAccounts(
     //pagination
     let page = 1;
     let size = 5;
-    if (req.query) {
+    if (req.query.page && req.query.size) {
       page = +(req.query.page as string);
       size = +(req.query.size as string);
     }
     const limit = size;
     const skip = (page - 1) * size;
 
+    // if()
     const getTransaction = await Transaction.find({}).limit(limit).skip(skip);
     if (!getTransaction) {
-      res.status(400).json({ message: "No Transaction Found" });
+      return res.status(400).json({ message: "No Transaction Found" });
     } else {
       res.status(200).json({ page, size, data: getTransaction });
     }
@@ -43,7 +44,8 @@ export async function getBalOfSingleAcct(
 ) {
   try {
     const _id = req.params._id;
-    const getSingleId = await Transaction.findById({ _id });
+    console.log(_id, "id");
+    const getSingleId = await Transaction.findOne({ _id: _id });
     console.log(getSingleId);
     if (!getSingleId) {
       return res
@@ -52,6 +54,7 @@ export async function getBalOfSingleAcct(
     }
     res.status(200).json({ success: true, msg: getSingleId });
   } catch (err) {
+    console.log("errored");
     res.status(500).json({ msg: err });
   }
 }
@@ -66,9 +69,10 @@ export async function createAcctBeneficiary(
   try {
     const id = uuidv4();
     const validation = balanceSchema.validate(req.body);
-    console.log(validation);
+    console.log(validation.error);
     if (validation.error) {
-      res.send(validation.error.details[0].message);
+      res.status(400).send(validation.error.details[0].message);
+      // return;
     } else {
       const { accountNumber, amount } = req.body;
 
@@ -85,10 +89,10 @@ export async function createAcctBeneficiary(
         const newAcc = new Transaction(accountDetails);
         newAcc
           .save()
-          .then(() => {
-            res.status(200).json({
+          .then((data: any) => {
+            res.status(201).json({
               Account: {
-                details: accountDetails,
+                details: data,
                 msg: "Account created successfully.",
               },
             });

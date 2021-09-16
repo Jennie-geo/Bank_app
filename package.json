@@ -6,7 +6,8 @@
   "author": "Jennie-geo <jennifer.isintume@decagon.dev>",
   "license": "MIT",
   "scripts": {
-    "test": "jest --runInBand ./test"
+    "start": "node ./bin/www",
+    "test": "jest"
   },
   "dependencies": {
     "@types/supertest": "^2.0.11",

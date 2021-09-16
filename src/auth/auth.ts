@@ -9,7 +9,7 @@ export function verifyToken(
   res: Response,
   next: express.NextFunction
 ) {
-  const authHeader = req.header("Authorization");
+  const authHeader = req.cookies.Authorization as string;
   console.log(authHeader);
   const token = authHeader;
   if (token == null) return res.sendStatus(401);
